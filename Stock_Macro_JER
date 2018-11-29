@@ -1,0 +1,69 @@
+'List all stocks by ticker
+'Change between open price and closing at year end
+'% change from open price
+'Sum all yearly activity
+
+Sub EasyLoop()
+
+'Titles for summary table
+Range("i1") = "Ticker"
+Range("j1") = "Yearly Change"
+Range("K1") = "Percent Change"
+Range("l1") = "Volume"
+
+'Defining variables    
+Dim Ticker As Integer
+Dim LastRow As Long
+Dim Volume As Double
+Dim OpenPrice As Double
+Dim YearlyChange As Double
+
+'Find last row of sheet
+LastRow = Cells(Rows.Count, 1).End(xlUp).Row
+
+'Set variable values
+Volume = 0
+Ticker = 1
+'Set OpenPrice for first stock
+OpenPrice = Cells(2, 3).Value
+
+    'Start going through tickers
+    For i = 2 To LastRow
+
+        'If tickers match
+        If Cells(i, 1) = Cells(i + 1, 1) Then
+        Volume = Volume + Cells(i, 7)
+        
+        'If tickers do not match
+        ElseIf Cells(i, 1) <> Cells(i + 1, 1) Then
+        Volume = Volume + Cells(i, 7)
+        YearlyChange = Cells(i, 3).Value - OpenPrice
+            
+            'set row number for summary table
+            Ticker = Ticker + 1
+
+            'put data into summary table
+            'stock name
+            Cells(Ticker, 9) = Cells(i, 1)
+            'yearly change
+            Cells(Ticker, 10) = YearlyChange
+                'set color of YearlyChange cells
+                If YearlyChange < 0 Then
+                    Cells(Ticker, 10).Interior.ColorIndex = 3
+                Else: Cells(Ticker, 10).Interior.ColorIndex = 4
+                End If
+            'percent change followed by % formatting
+            Cells(Ticker, 11) = YearlyChange / OpenPrice
+            Cells(Ticker, 11).NumberFormat = "0.00%"
+            'stock volume
+            Cells(Ticker, 12) = Volume
+            
+                'reset volume to 0
+                Volume = 0
+                'set OpenPrice of new stock
+                OpenPrice = Cells(i + 1, 3).Value
+        
+            End If
+        Next i
+Next Worksheet
+End Sub
